@@ -12,8 +12,12 @@
     "postversion": "git push && git push --tags"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Valeriy Zimnev (@zmnv)",
+     "repository": {
+     "type": "git",
+     "url": "git+https://github.com/zmnv/ethblockart-humanizer.git"
+   },
+  "license": "MIT",
   "devDependencies": {
     "typescript": "^4.4.4"
   },
