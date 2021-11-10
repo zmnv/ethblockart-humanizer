@@ -1,4 +1,4 @@
-import { getDaytime, getSeason } from "./inspector.advanced";
+import { getDaytime, getSeason } from "./advanced";
 import { EthBlock, EthTransaction, TransactionTypes, TransactionValues } from "./types";
 
 const isERC20 = ({ data, input }: Pick<EthTransaction, 'data' | 'input'>) => {
