@@ -46,14 +46,16 @@ export interface EthBlock extends Omit<EthB, 'transactions'> {
 };
 
 
-export type TransactionTypes = {
+export type HumanizedTransactionTypes = {
   erc20: number;
   nft: number;
   transfer: number;
   unrecognized: number;
 }
 
-export type TransactionValues = {
+export type HumanizedTransactionTypeName = 'unrecognized' | 'erc20' | 'nft' | 'transfer';
+
+export type HumanizedTransactionValues = {
   value: {
       avgValue: number;
       medianValue: number;
