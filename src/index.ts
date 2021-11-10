@@ -1,9 +1,33 @@
 import { getDaytime, getSeason } from "./advanced";
-import { EthBlock, EthTransaction, TransactionTypes, TransactionValues } from "./types";
+import { EthBlock, EthTransaction, HumanizedTransactionTypeName, HumanizedTransactionTypes, HumanizedTransactionValues } from "./types";
+
+const SIGNS = {
+    erc20: {
+        data: ["a9059cbb", "23b872dd", "18160ddd", "70a08231", "dd62ed3e", "095ea7b3"],
+    },
+    nft: {
+        data: ["1249c58b", "672a9400", "40c10f19", "449a52f8", "a140ae23"],
+        to: [
+            "0xaa84f7c9164db5c11b9fa65ad0118977c12a4729",
+            "0xb80fbf6cdb49c33dc6ae4ca11af8ac47b0b4c0f3",
+            "0x495f947276749ce646f68ac8c248420045cb7b5e",
+            "0x60f80121c31a0d46b5279700f9df786054aa5ee5",
+            "0x3b3ee1931dc30c1957379fac9aba94d1c48a5405",
+            "0x2a46f2ffd99e19a89476e2f62270e0a35bbf0756",
+            "0xfbeef911dc5821886e1dda71586d90ed28174b7d",
+            "0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270",
+            "0xb932a70a57673d89f4acffbe830e8ed7f75fb9e0",
+            "0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb",
+            "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d",
+            "0x06012c8cf97bead5deae237070f9587f8e7a266d",
+            "0xf5b0a3efb8e8e4c201e2a935f110eaaf3ffecb8d"
+        ]
+    }
+}
 
 const isERC20 = ({ data, input }: Pick<EthTransaction, 'data' | 'input'>) => {
     let result = false;
-    const ERC20_SIGNS = ["a9059cbb", "23b872dd", "18160ddd", "70a08231", "dd62ed3e", "095ea7b3"];
+    const ERC20_SIGNS = SIGNS.erc20.data;
 
     ERC20_SIGNS.forEach((s => {
         if (result) return;
@@ -15,10 +39,9 @@ const isERC20 = ({ data, input }: Pick<EthTransaction, 'data' | 'input'>) => {
     return result;
 }
 
-
 const isNFT = ({ data, to, input }: Pick<EthTransaction, 'data' | 'to' | 'value' | 'input'>) => {
     let result = false;
-    const NFT_SIGNS = ["1249c58b", "672a9400", "40c10f19", "449a52f8", "a140ae23"];
+    const NFT_SIGNS = SIGNS.nft.data;
     NFT_SIGNS.forEach((s => {
         if (result) return;
         if ((data || input).toLowerCase().startsWith(`0x${s}`)) {
@@ -29,21 +52,7 @@ const isNFT = ({ data, to, input }: Pick<EthTransaction, 'data' | 'to' | 'value'
 
     if (!to) return result;
 
-    const NFT_ART = [
-        "0xaa84f7c9164db5c11b9fa65ad0118977c12a4729",
-        "0xb80fbf6cdb49c33dc6ae4ca11af8ac47b0b4c0f3",
-        "0x495f947276749ce646f68ac8c248420045cb7b5e",
-        "0x60f80121c31a0d46b5279700f9df786054aa5ee5",
-        "0x3b3ee1931dc30c1957379fac9aba94d1c48a5405",
-        "0x2a46f2ffd99e19a89476e2f62270e0a35bbf0756",
-        "0xfbeef911dc5821886e1dda71586d90ed28174b7d",
-        "0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270",
-        "0xb932a70a57673d89f4acffbe830e8ed7f75fb9e0",
-        "0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb",
-        "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d",
-        "0x06012c8cf97bead5deae237070f9587f8e7a266d",
-        "0xf5b0a3efb8e8e4c201e2a935f110eaaf3ffecb8d"
-    ];
+    const NFT_ART = SIGNS.nft.to;
 
     NFT_ART.forEach((s => {
         if (result) return;
@@ -62,15 +71,29 @@ const isTransfer = ({ value }: Pick<EthTransaction, 'data' | 'to' | 'value'>) =>
 
 const ethToValue = (v:any) => parseInt(v, 16) / 1000000000000000000;
 
-export function getTransactionsHumanized({ transactions }: Pick<EthBlock, 'transactions'>) {
+export function getTransactionHumanizedTypeName(transaction: EthTransaction) {
+    let currentType: HumanizedTransactionTypeName = 'unrecognized';
+    if (isERC20(transaction)) {
+        currentType = 'erc20';
+    }
+    else if (isNFT(transaction)) {
+        currentType = 'nft';
+    }
+    else if (isTransfer(transaction)) {
+        currentType = 'transfer';
+    }
 
-    const types: TransactionTypes = {
+    return currentType;
+}
+
+export function getTransactionsHumanized({ transactions }: Pick<EthBlock, 'transactions'>) {
+    const types: HumanizedTransactionTypes = {
         erc20: 0,
         nft: 0,
         transfer: 0,
         unrecognized: 0,
     }
-    const values: TransactionValues = {
+    const values: HumanizedTransactionValues = {
         value: {
             avgValue: 0,
             minValue: 0,
@@ -91,20 +114,21 @@ export function getTransactionsHumanized({ transactions }: Pick<EthBlock, 'trans
     let dataGas: number[] = [];
 
     transactions?.forEach(transaction => {
-        let currentType = 'unrecognized';
-        if (isERC20(transaction)) {
-            types.erc20 += 1;
-            currentType = 'erc20';
-        }
-        else if (isNFT(transaction)) {
-            types.nft += 1;
-            currentType = 'nft';
-        }
-        else if (isTransfer(transaction)) {
-            types.transfer += 1;
-            currentType = 'transfer';
-        } else {
-            types.unrecognized += 1;
+        const type = getTransactionHumanizedTypeName(transaction);
+        switch (type) {
+            case 'erc20':
+                types.erc20 += 1;
+                break;
+            case 'nft':
+                types.nft += 1;
+                break;
+            case 'transfer':
+                types.transfer += 1;
+                break;
+            case 'unrecognized':
+            default:
+                types.unrecognized += 1;
+                break;
         }
 
         const gp = transaction.gasPrice._hex || transaction.gasPrice.hex;
@@ -116,7 +140,7 @@ export function getTransactionsHumanized({ transactions }: Pick<EthBlock, 'trans
 
         values.data.push({
             hash: transaction.hash,
-            type: currentType,
+            type,
             value: val,
             gas,
         });
@@ -145,9 +169,6 @@ export function getTransactionsHumanized({ transactions }: Pick<EthBlock, 'trans
 
     return { types, values };
 }
-
-
-
 
 export function getBlockHumanized(block: EthBlock) {
     const { types, values } = getTransactionsHumanized(block);
