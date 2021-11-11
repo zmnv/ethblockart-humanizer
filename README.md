@@ -19,7 +19,7 @@
 
 ### This package uses block data structure via EthBlock.Art.
 
-If you want to use this package outside of EthBlock.Art development boilerplate, you need to be sure if the block models from your API are prepared to this package model based on [useDApp](https://github.com/EthWorks/useDApp)'s (and EthBlock.Art) block metadata response.
+If you want to use this package outside of EthBlock.Art development boilerplate, you need to be sure if the block data structure from your API are prepared to this package structure based on [useDApp](https://github.com/EthWorks/useDApp)'s (and EthBlock.Art) block metadata response.
 
 Different APIs are gives different 'block metadata'.
 
@@ -91,7 +91,6 @@ Result:
 # Created for EthBlockArt Humanizer
 
 ### https://zashi.art/ebah
-### &nbsp;
 
 [EthBlockArt](https://ethblock.art) is about facing a mirror towards the chain we use and data we create.
 
