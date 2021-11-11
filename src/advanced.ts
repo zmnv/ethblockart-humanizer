@@ -7,7 +7,7 @@ const SeasonsList = {
     autumn: 'autumn',
 }
 
-export function getSeason({ timestamp }: Pick<EthBlock, 'timestamp'>) {
+export function getBlockHumanizedSeason({ timestamp }: Pick<EthBlock, 'timestamp'>) {
     const month = new Date(timestamp*1000).getMonth();
     switch (month) {
         case 0:
@@ -37,7 +37,7 @@ const DaytimeList = {
     evening: 'evening'
 }
 
-export function getDaytime({ timestamp }: Pick<EthBlock, 'timestamp'>) {
+export function getBlockHumanizedDaytime({ timestamp }: Pick<EthBlock, 'timestamp'>) {
     const hours = new Date(timestamp*1000).getUTCHours();
 
     if (hours < 6) {

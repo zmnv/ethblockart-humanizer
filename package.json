@@ -17,6 +17,7 @@
   },
   "keywords": [],
   "author": "Valeriy Zimnev (@zmnv)",
+  "homepage": "https://zashi.art/ebah/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/zmnv/ethblockart-humanizer.git"
