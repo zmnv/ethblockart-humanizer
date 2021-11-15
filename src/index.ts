@@ -68,7 +68,8 @@ const isNFT = ({ data, to }: Pick<EthTransaction, 'data' | 'to' | 'value'>) => {
 }
 
 const isTransfer = ({ value }: Pick<EthTransaction, 'data' | 'to' | 'value'>) => {   
-    if (value.hex && parseInt(value.hex, 16) !== 0) return true;
+    const vHex = value.hex || value._hex;
+    if (vHex && parseInt(vHex, 16) !== 0) return true;
     return false;
 }
 
@@ -188,10 +189,10 @@ export function getTransactionsHumanized({ transactions }: Pick<EthBlock, 'trans
                 break;
         }
 
-        const gp = transaction.gasPrice.hex;
-        const gl = transaction.gasLimit.hex;
+        const gp = transaction.gasPrice.hex || transaction.gasPrice._hex;
+        const gl = transaction.gasLimit.hex || transaction.gasLimit._hex;
         const gas = ethToValue(gp) * ethToValue(gl)*1000000000000000000;
-        const val = ethToValue(transaction.value.hex);
+        const val = ethToValue(transaction.value.hex || transaction.value._hex);
         dataValue.push(val);
         dataGas.push(gas)
 
