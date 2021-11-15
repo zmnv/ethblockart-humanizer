@@ -54,7 +54,7 @@ export type HumanizedTransactionTypes = {
 
 export type HumanizedTransactionTypeName = 'unrecognized' | 'erc20' | 'nft' | 'transfer';
 export declare type HumanizedTransactionValuesData = {
-  gas:number; hash: string, type: string; value: number;
+  gas:number; hash: string, type: HumanizedTransactionTypeName; value: number;
 }
 
 export type HumanizedTransactionValues = {
